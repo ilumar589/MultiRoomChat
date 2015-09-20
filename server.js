@@ -6,7 +6,13 @@ var http = require('http');
 var fs = require('fs');
 var mime = require('mime');
 var path = require('path');
-var cache = {}; // cache object
+
+/**
+ *
+ *  The cache object will contain property names equivalent to path names
+ *  and the data stored in the respective paths will be the file contents for the path name
+ */
+var cache = {};
 
 function send404(response){
     response.writeHead(404,{'Content-Type' : 'text/plain'});
@@ -40,3 +46,21 @@ function serveStatic(response,absPath){
         })
     }
 }
+
+
+var server = http.createServer(function(request,response){
+    var filePath = false;
+    if (request.uri == '/'){
+        filePath = 'public/index.html';
+    }else{
+        filePath = 'public' + request.url;
+    }
+
+    var absPath = './' + filePath;
+
+    serveStatic(response,absPath);
+});
+
+server.listen(3000,function(){
+   console.log("Server listening on port 3000");
+});
